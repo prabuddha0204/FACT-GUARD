@@ -63,7 +63,7 @@ function App() {
     setResult(null)
 
     try {
-      const res = await fetch("https://factguard-backend.onrender.com", {
+      const res = await fetch("https://factguard-backend.onrender.com/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: message, category })
