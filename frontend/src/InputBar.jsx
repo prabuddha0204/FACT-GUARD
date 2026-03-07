@@ -2,16 +2,16 @@ import { useState, useRef, useEffect } from "react"
 
 const categories = [
   { label: "KYC", active: true },
-  { label: "Fake News", active: true },
-  { label: "Deepfake", active: false },
-  { label: "Scam Detection", active: false },
-  { label: "Phishing", active: false },
-  { label: "Fraud", active: false },
+  { label: "FAKE NEWS", active: true },
+  { label: "DEEPFAKE", active: false },
+  { label: "SCAM DETECTION", active: false },
+  { label: "PHISHING", active: false },
+  { label: "FRAUD", active: false },
 ]
 
 const attachOptions = [
   {
-    label: "Photo / Video",
+    label: "PHOTO / VIDEO",
     accept: "image/*,video/*",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -22,7 +22,7 @@ const attachOptions = [
     )
   },
   {
-    label: "Document",
+    label: "DOCUMENT",
     accept: ".pdf,.doc,.docx,.txt,.csv",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -32,7 +32,7 @@ const attachOptions = [
     )
   },
   {
-    label: "Voice Recording",
+    label: "VOICE RECORDING",
     isVoice: true,
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -42,7 +42,7 @@ const attachOptions = [
     )
   },
   {
-    label: "Camera",
+    label: "CAMERA",
     accept: "image/*",
     capture: "environment",
     icon: (
@@ -130,19 +130,19 @@ function InputBar({ onSend }) {
 
         <textarea
           className="typebar"
-          placeholder="Enter a claim, URL, or paste content to verify..."
+          placeholder="ENTER A CLAIM, URL, OR PASTE CONTENT TO VERIFY..."
           value={message}
           onChange={e => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           rows={1}
         />
 
-        <button
-          className={`send-btn ${message.trim() ? "active" : ""}`}
-          onClick={handleSend}
-        >
-          ➤
-        </button>
+        <button className={`send-btn ${message.trim() ? "active" : ""}`} onClick={handleSend}>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="22" y1="2" x2="11" y2="13"/>
+    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+  </svg>
+</button>
 
       </div>
 
