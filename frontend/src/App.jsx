@@ -9,7 +9,6 @@ function parseConfidence(conf) {
   return isNaN(n) ? 0 : Math.min(n, 100)
 }
 
-// Circumference = 2π×r where r=39 → ~245
 const CIRC = 245
 
 function ConfRing({ pct, verdict }) {
@@ -34,16 +33,31 @@ function ConfRing({ pct, verdict }) {
   )
 }
 
-function App() {
+const SUGGESTIONS = [
+  { text: "Einstein failed math in school", category: "Fake News" },
+  { text: "The Great Wall of China is visible from space", category: "Fake News" },
+  { text: "Vaccines contain microchips to track people", category: "Fake News" },
+  { text: "Drinking bleach cures COVID-19", category: "Fake News" },
+  { text: "Aadhaar card alone is sufficient KYC for all banks", category: "KYC" },
+  { text: "Humans only use 10% of their brain", category: "Fake News" },
+]
 
+const STATS = [
+  { value: "2.4M+", label: "Claims Checked" },
+  { value: "98.2%", label: "Accuracy Rate" },
+  { value: "150+", label: "Sources Indexed" },
+  { value: "REAL-TIME", label: "Web Search" },
+]
+
+function App() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [suggestionText, setSuggestionText] = useState(null)
 
   const handleSend = async (message, category) => {
     console.log("User message:", message)
     console.log("Category:", category)
-
     setLoading(true)
     setError(null)
     setResult(null)
@@ -52,7 +66,7 @@ function App() {
       const res = await fetch("http://localhost:5000/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: message, category: category })
+        body: JSON.stringify({ text: message, category })
       })
       const data = await res.json()
       console.log("AI Result:", data)
@@ -75,14 +89,9 @@ function App() {
   return (
     <>
       <Beams
-        beamWidth={3}
-        beamHeight={30}
-        beamNumber={20}
-        lightColor="#ffffff"
-        speed={2}
-        noiseIntensity={1.75}
-        scale={0.2}
-        rotation={30}
+        beamWidth={3} beamHeight={30} beamNumber={20}
+        lightColor="#ffffff" speed={2} noiseIntensity={1.75}
+        scale={0.2} rotation={30}
       />
 
       <div className="content">
@@ -90,8 +99,44 @@ function App() {
         <p className="subh">AI-powered misinformation detection for the modern internet.</p>
       </div>
 
+      {/* ── CENTER HERO ── */}
+      <div className="hero-center">
+
+        {/* Stats row */}
+        <div className="stats-row">
+          {STATS.map((s, i) => (
+            <div className="stat-item" key={i} style={{ animationDelay: `${i * 0.08}s` }}>
+              <span className="stat-value">{s.value}</span>
+              <span className="stat-label">{s.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Divider */}
+        <div className="hero-divider" />
+
+        {/* Suggestion label */}
+        <p className="suggestions-label">Try an example</p>
+
+        {/* Suggestion chips */}
+        <div className="suggestions-grid">
+          {SUGGESTIONS.map((s, i) => (
+            <button
+              key={i}
+              className="suggestion-chip"
+              style={{ animationDelay: `${0.1 + i * 0.06}s` }}
+              onClick={() => setSuggestionText(s.text)}
+            >
+              <span className="suggestion-chip-cat">{s.category}</span>
+              <span className="suggestion-chip-text">{s.text}</span>
+            </button>
+          ))}
+        </div>
+
+      </div>
+
       <div className="app-container">
-        <InputBar onSend={handleSend} />
+        <InputBar onSend={handleSend} prefillText={suggestionText} onPrefillUsed={() => setSuggestionText(null)} />
       </div>
 
       {/* ── LOADING ── */}
@@ -100,7 +145,7 @@ function App() {
           <div className="resultBox">
             <div className="card-sweep" />
             <div className="loadingBox">
-              <p className="loading-header">Analyzing claim</p>
+              <p className="loading-header">Searching the web & analyzing claim</p>
               <div className="loading-bar-track">
                 <div className="loading-bar-fill" />
               </div>
@@ -111,9 +156,7 @@ function App() {
               </div>
               <div className="loading-footer">
                 <div className="ldots">
-                  <div className="ldot" />
-                  <div className="ldot" />
-                  <div className="ldot" />
+                  <div className="ldot" /><div className="ldot" /><div className="ldot" />
                 </div>
                 <p className="loading-text">FactGuard is processing…</p>
               </div>
@@ -139,55 +182,82 @@ function App() {
 
       {/* ── RESULT ── */}
       {result && (
-        <div
-          className="popup-backdrop"
-          onClick={() => setResult(null)}
-        >
-          {/* ambient glow */}
+        <div className="popup-backdrop" onClick={() => setResult(null)}>
           <div className={`popup-glow ${result.verdict}`} />
 
-          <div
-            className={`resultBox ${result.verdict}`}
-            onClick={e => e.stopPropagation()}
-          >
+          <div className={`resultBox ${result.verdict}`} onClick={e => e.stopPropagation()}>
             <div className={`card-top-border ${result.verdict}`} />
             <div className="card-sweep" />
             <button className="popup-close" onClick={() => setResult(null)}>✕</button>
 
             <div className="card-inner">
-
-              {/* eyebrow */}
               <p className="card-eyebrow">Fact-check result</p>
 
-              {/* main row: verdict + ring */}
               <div className="verdict-main-row">
                 <div className="verdict-left">
                   <p className="verdict-label-sm">Verdict</p>
-                  <div className={`verdict-word ${result.verdict}`}>
-                    {result.verdict}
-                  </div>
+                  <div className={`verdict-word ${result.verdict}`}>{result.verdict}</div>
                   <span className={`verdict-pill ${result.verdict}`}>
                     <span className="verdict-dot" />
-                    {result.verdict === "True"        && "Claim verified"}
-                    {result.verdict === "False"       && "Claim debunked"}
-                    {result.verdict === "Misleading"  && "Partially accurate"}
-                    {result.verdict === "Unverified"  && "Cannot verify"}
+                    {result.verdict === "True"       && "Claim verified"}
+                    {result.verdict === "False"      && "Claim debunked"}
+                    {result.verdict === "Misleading" && "Partially accurate"}
+                    {result.verdict === "Unverified" && "Cannot verify"}
                   </span>
                 </div>
-
                 <ConfRing pct={confPct} verdict={result.verdict} />
               </div>
 
-              {/* divider */}
               <div className="card-divider" />
 
-              {/* explanation */}
               <div className="explanation-wrap">
                 <p className="explanation-lbl">Analysis</p>
                 <p className="explanation-text">{result.explanation}</p>
               </div>
 
-              {/* footer */}
+              {result.breakdown && result.breakdown.length > 0 && (
+                <div className="breakdown-wrap">
+                  <p className="breakdown-lbl">Why this verdict</p>
+                  <div className="breakdown-list">
+                    {result.breakdown.map((item, i) => (
+                      <div className="breakdown-item" key={i}>
+                        <div className={`breakdown-dot ${result.verdict}`} />
+                        <div className="breakdown-content">
+                          <span className="breakdown-point">{item.point}</span>
+                          <span className="breakdown-detail">{item.detail}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {result.sources && result.sources.length > 0 && (
+                <div className="sources-wrap">
+                  <p className="sources-lbl">Sources</p>
+                  <div className="sources-list">
+                    {result.sources.map((src, i) => (
+                      <a key={i} href={src.url} target="_blank" rel="noopener noreferrer" className="source-item">
+                        <div className="source-favicon">
+                          <img
+                            src={`https://www.google.com/s2/favicons?sz=16&domain=${new URL(src.url).hostname}`}
+                            alt=""
+                            onError={e => e.target.style.display = "none"}
+                          />
+                        </div>
+                        <div className="source-text">
+                          <span className="source-title">{src.title}</span>
+                          <span className="source-domain">{new URL(src.url).hostname.replace("www.", "")}</span>
+                        </div>
+                        <svg className="source-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
+                        </svg>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="card-footer">
                 <span className="footer-brand">FactGuard AI</span>
                 <div className="footer-status">
@@ -195,7 +265,6 @@ function App() {
                   <span className="footer-status-txt">Analyzed · {now}</span>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
