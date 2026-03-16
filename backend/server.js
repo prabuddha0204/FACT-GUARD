@@ -603,7 +603,7 @@ app.post("/whatsapp", async (req, res) => {
       const urlMatch = incomingMsg.match(/https?:\/\/[^\s]+/)
       const url = urlMatch ? urlMatch[0] : incomingMsg
 
-      const scanRes = await axios.post("https://factguard-backend.onrender.com", {
+      const scanRes = await axios.post("https://factguard-backend.onrender.com/scan-url", {
         url
       })
       const data = scanRes.data
@@ -617,7 +617,7 @@ app.post("/whatsapp", async (req, res) => {
 
     } else {
       // Run through fact check
-      const checkRes = await axios.post("https://factguard-backend.onrender.com", {
+      const checkRes = await axios.post("https://factguard-backend.onrender.com/check", {
         text: incomingMsg,
         category
       })
