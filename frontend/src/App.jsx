@@ -43,15 +43,14 @@ const SUGGESTIONS = [
 ]
 
 const STATS = [
-  { value: "100+", label: "Claims Checked" },
+  { value: "2.4M+", label: "Claims Checked" },
   { value: "98.2%", label: "Accuracy Rate" },
-  { value: "50+", label: "Sources Indexed" },
+  { value: "150+", label: "Sources Indexed" },
   { value: "REAL-TIME", label: "Web Search" },
 ]
 
 const BACKEND = "https://factguard-backend.onrender.com"
 
-// Maps phishing verdicts to our color system
 function getVerdictClass(verdict) {
   if (verdict === "SAFE") return "True"
   if (verdict === "SUSPICIOUS") return "Misleading"
@@ -148,8 +147,6 @@ function App() {
 
   const confPct = result ? parseConfidence(result.confidence) : 0
   const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-
-  // For phishing results, map verdict to our color classes
   const verdictClass = result ? getVerdictClass(result.verdict) : ""
 
   return (
@@ -256,21 +253,17 @@ function App() {
                   : "Fact-check result"}
               </p>
 
-              {/* Verdict + Ring/Score */}
               <div className="verdict-main-row">
                 <div className="verdict-left">
                   <p className="verdict-label-sm">Verdict</p>
                   <div className={`verdict-word ${verdictClass}`}>{result.verdict}</div>
                   <span className={`verdict-pill ${verdictClass}`}>
                     <span className="verdict-dot" />
-                    {/* Text verdicts */}
                     {result.verdict === "True"        && "Claim verified"}
                     {result.verdict === "False"       && "Claim debunked"}
                     {result.verdict === "Misleading"  && "Partially accurate"}
                     {result.verdict === "Unverified"  && "Cannot verify"}
-                    {/* Image verdicts */}
                     {result.isImageResult && result.label}
-                    {/* Phishing verdicts */}
                     {result.verdict === "SAFE"        && "No threats detected"}
                     {result.verdict === "SUSPICIOUS"  && "Potential phishing domain"}
                     {result.verdict === "PHISHING"    && "Confirmed phishing site"}
@@ -296,7 +289,6 @@ function App() {
 
               <div className="card-divider" />
 
-              {/* URL info for phishing results */}
               {result.isPhishingResult && (
                 <div className="url-info-wrap">
                   <div className="url-info-row">
@@ -314,13 +306,11 @@ function App() {
                 </div>
               )}
 
-              {/* Explanation */}
               <div className="explanation-wrap">
                 <p className="explanation-lbl">Analysis</p>
                 <p className="explanation-text">{result.explanation}</p>
               </div>
 
-              {/* Breakdown */}
               {result.breakdown && result.breakdown.length > 0 && (
                 <div className="breakdown-wrap">
                   <p className="breakdown-lbl">
@@ -340,7 +330,6 @@ function App() {
                 </div>
               )}
 
-              {/* Manipulation Tactic — Fake News */}
               {result.manipulationTactic && result.manipulationTactic !== "None" && (
                 <div className="tactic-wrap">
                   <p className="tactic-lbl">Manipulation Tactic Used</p>
@@ -348,7 +337,6 @@ function App() {
                 </div>
               )}
 
-              {/* Scam Signals — KYC */}
               {result.scamSignals && result.scamSignals.length > 0 && (
                 <div className="scam-signals-wrap">
                   <p className="scam-signals-lbl">Scam Signals Detected</p>
@@ -360,7 +348,6 @@ function App() {
                 </div>
               )}
 
-              {/* Sources — text results only */}
               {!result.isImageResult && !result.isPhishingResult && result.sources && result.sources.length > 0 && (
                 <div className="sources-wrap">
                   <p className="sources-lbl">Sources</p>
@@ -387,7 +374,6 @@ function App() {
                 </div>
               )}
 
-              {/* Footer */}
               <div className="card-footer">
                 <span className="footer-brand">FactGuard AI</span>
                 <div className="footer-status">
