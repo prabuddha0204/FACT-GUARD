@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@google/genai": "^1.44.0",
+    "@mendable/firecrawl-js": "^4.16.0",
     "@tavily/core": "^0.7.2",
     "axios": "^1.13.6",
     "cors": "^2.8.6",
