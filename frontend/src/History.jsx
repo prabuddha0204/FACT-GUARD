@@ -54,7 +54,7 @@ export default function History({ history, onSelect, onClear }) {
       <style>{`
         .fg-history-btn {
           position: fixed;
-          top: 15px;
+          top: 145px;
           left: 24px;
           z-index: 39;
           background: rgba(15,23,42,0.6);
