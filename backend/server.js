@@ -6,6 +6,7 @@ import { tavily } from "@tavily/core";
 import multer from "multer"
 import FormData from "form-data"
 import axios from "axios"
+import twilio from "twilio"
 
 const upload = multer({ storage: multer.memoryStorage() })
 
@@ -641,8 +642,8 @@ app.post("/whatsapp", async (req, res) => {
     }
 
     // Send WhatsApp reply via Twilio
-    const twilio = (await import("twilio")).default
     const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
+
 
     await client.messages.create({
       from: process.env.TWILIO_WHATSAPP_FROM,
