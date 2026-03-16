@@ -636,3 +636,23 @@
   border-color: #3b82f6 !important;
   background: rgba(59, 130, 246, 0.05) !important;
 }
+.share-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px auto 0;
+  padding: 8px 20px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+.share-btn:hover {
+  background: rgba(255,255,255,0.14);
+}

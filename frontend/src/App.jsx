@@ -2,7 +2,7 @@ import "./App.css"
 import Beams from "./Beams"
 import InputBar from "./InputBar"
 import { useState, useEffect } from "react"
-
+import html2canvas from "html2canvas"
 function parseConfidence(conf) {
   if (!conf) return 0
   const n = parseInt(String(conf).replace(/[^0-9]/g, ""), 10)
@@ -80,7 +80,29 @@ function App() {
     setLoading(true)
     setError(null)
     setResult(null)
+    
+const shareVerdict = async () => {
+  const card = document.querySelector(".card-inner")
+  if (!card) return
+  const canvas = await html2canvas(card, {
+    backgroundColor: "#0f172a",
+    scale: 2
+  })
+  const image = canvas.toDataURL("image/png")
 
+  // Try native share first (mobile)
+  if (navigator.share) {
+    const blob = await (await fetch(image)).blob()
+    const file = new File([blob], "factguard-verdict.png", { type: "image/png" })
+    await navigator.share({ files: [file], title: "FactGuard Verdict" })
+  } else {
+    // Fallback — download image
+    const a = document.createElement("a")
+    a.href = image
+    a.download = "factguard-verdict.png"
+    a.click()
+  }
+}
     try {
       // ── DEEPFAKE ──
       if (category === "DEEPFAKE") {

@@ -1,12 +1,22 @@
-chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-  chrome.scripting.executeScript({
-    target: { tabId: tabs[0].id },
-    func: () => window.getSelection().toString()
-  }, (results) => {
-    if (results?.[0]?.result) {
-      document.getElementById("text").value = results[0].result
-    }
-  })
+// On load — check storage first (from content script click)
+chrome.storage.local.get("selectedText", (data) => {
+  if (data.selectedText) {
+    document.getElementById("text").value = data.selectedText
+    chrome.storage.local.remove("selectedText")
+  } else {
+    // Fallback — grab current selection from page
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (!tabs[0]?.id) return
+      chrome.scripting.executeScript({
+        target: { tabId: tabs[0].id },
+        func: () => window.getSelection().toString()
+      }, (results) => {
+        if (results?.[0]?.result) {
+          document.getElementById("text").value = results[0].result
+        }
+      })
+    })
+  }
 })
 
 async function check() {
@@ -74,8 +84,6 @@ async function check() {
   } catch (err) {
     resultDiv.innerHTML = `<div class="verdict-unknown"><div class="result-body">Connection error. Make sure backend is running.</div></div>`
   }
-
-
 
   btn.disabled = false
   btn.textContent = "Check Now"
