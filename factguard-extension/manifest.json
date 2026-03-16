@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "FactGuard AI",
   "version": "1.0",
-  "description": "Fact check anything instantly",
+  "description": "Fact check anything instantly. Auto-detects fraudulent websites.",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -16,8 +16,11 @@
     "48": "icon.png",
     "128": "icon.png"
   },
-  "permissions": ["activeTab", "scripting", "storage"],
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
   "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
