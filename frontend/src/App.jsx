@@ -49,7 +49,7 @@ const STATS = [
   { value: "REAL-TIME", label: "Web Search" },
 ]
 
-const BACKEND = "http://localhost:5000"
+const BACKEND = "https://factguard-backend.onrender.com"
 
 // Maps phishing verdicts to our color system
 function getVerdictClass(verdict) {
