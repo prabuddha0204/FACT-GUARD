@@ -54,14 +54,14 @@ export default function History({ history, onSelect, onClear }) {
       <style>{`
         .fg-history-btn {
           position: fixed;
-          top: 145px;
+          top: 15px;
           left: 24px;
           z-index: 39;
           background: rgba(15,23,42,0.6);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
           border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 8px;
+          
           color: #475569;
           padding: 8px;
           cursor: pointer;
@@ -140,7 +140,7 @@ export default function History({ history, onSelect, onClear }) {
           border: 1px solid rgba(239,68,68,0.18);
           color: #f87171;
           padding: 5px 10px;
-          border-radius: 7px;
+          
           cursor: pointer;
           font-size: 11px;
           font-weight: 700;
@@ -153,7 +153,7 @@ export default function History({ history, onSelect, onClear }) {
           border: 1px solid rgba(255,255,255,0.06);
           color: #334155;
           width: 28px; height: 28px;
-          border-radius: 7px;
+          
           cursor: pointer;
           font-size: 13px;
           display: flex; align-items: center; justify-content: center;
@@ -189,7 +189,7 @@ export default function History({ history, onSelect, onClear }) {
           text-align: left;
           background: rgba(255,255,255,0.02);
           border: 1px solid rgba(255,255,255,0.04);
-          border-radius: 11px;
+          
           padding: 11px 13px;
           cursor: pointer;
           margin-bottom: 6px;
