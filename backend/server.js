@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: false }));
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const tavilyClient = tavily({ apiKey: process.env.TAVILY_API_KEY });
 const SAFE_BROWSING_KEY = process.env.GOOGLE_SAFE_BROWSING_KEY;
@@ -603,7 +603,7 @@ app.post("/whatsapp", async (req, res) => {
       const urlMatch = incomingMsg.match(/https?:\/\/[^\s]+/)
       const url = urlMatch ? urlMatch[0] : incomingMsg
 
-      const scanRes = await axios.post("http://localhost:5000/scan-url", {
+      const scanRes = await axios.post("https://factguard-backend.onrender.com", {
         url
       })
       const data = scanRes.data
@@ -617,7 +617,7 @@ app.post("/whatsapp", async (req, res) => {
 
     } else {
       // Run through fact check
-      const checkRes = await axios.post("http://localhost:5000/check", {
+      const checkRes = await axios.post("https://factguard-backend.onrender.com", {
         text: incomingMsg,
         category
       })

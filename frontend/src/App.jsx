@@ -43,13 +43,13 @@ const SUGGESTIONS = [
 ]
 
 const STATS = [
-  { value: "2.4M+", label: "Claims Checked" },
+  { value: "100+", label: "Claims Checked" },
   { value: "98.2%", label: "Accuracy Rate" },
-  { value: "150+", label: "Sources Indexed" },
+  { value: "50+", label: "Sources Indexed" },
   { value: "REAL-TIME", label: "Web Search" },
 ]
 
-const BACKEND = "https://factguard-backend.onrender.com"
+const BACKEND = "http://localhost:5000"
 
 // Maps phishing verdicts to our color system
 function getVerdictClass(verdict) {
