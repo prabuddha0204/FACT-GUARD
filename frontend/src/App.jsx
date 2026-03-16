@@ -1,8 +1,10 @@
 import "./App.css"
 import Beams from "./Beams"
 import InputBar from "./InputBar"
+import History, { useHistory } from "./History"
 import { useState, useEffect } from "react"
-import html2canvas from "html2canvas"
+import domtoimage from "dom-to-image-more"
+
 function parseConfidence(conf) {
   if (!conf) return 0
   const n = parseInt(String(conf).replace(/[^0-9]/g, ""), 10)
@@ -63,6 +65,7 @@ function App() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [suggestionText, setSuggestionText] = useState(null)
+  const { history, addEntry, clearHistory } = useHistory()
 
   // PWA Web Share Target
   useEffect(() => {
@@ -74,35 +77,44 @@ function App() {
     }
   }, [])
 
+  // ── SHARE VERDICT ──
+  const shareVerdict = async () => {
+    try {
+      const card = document.querySelector(".card-inner")
+      if (!card) return
+      const blob = await domtoimage.toBlob(card, {
+        bgcolor: "#0f172a",
+        scale: 2
+      })
+      const file = new File([blob], "factguard-verdict.png", { type: "image/png" })
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: "FactGuard Verdict" })
+      } else {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = "factguard-verdict.png"
+        a.click()
+        URL.revokeObjectURL(url)
+      }
+    } catch (err) {
+      console.error("Share error:", err)
+      alert("Could not share. Try again.")
+    }
+  }
+
+  // ── HISTORY SELECT ──
+  const handleHistorySelect = (item) => {
+    setResult(item.result)
+  }
+
   const handleSend = async (message, category, imageFile) => {
     console.log("User message:", message)
     console.log("Category:", category)
     setLoading(true)
     setError(null)
     setResult(null)
-    
-const shareVerdict = async () => {
-  const card = document.querySelector(".card-inner")
-  if (!card) return
-  const canvas = await html2canvas(card, {
-    backgroundColor: "#0f172a",
-    scale: 2
-  })
-  const image = canvas.toDataURL("image/png")
 
-  // Try native share first (mobile)
-  if (navigator.share) {
-    const blob = await (await fetch(image)).blob()
-    const file = new File([blob], "factguard-verdict.png", { type: "image/png" })
-    await navigator.share({ files: [file], title: "FactGuard Verdict" })
-  } else {
-    // Fallback — download image
-    const a = document.createElement("a")
-    a.href = image
-    a.download = "factguard-verdict.png"
-    a.click()
-  }
-}
     try {
       // ── DEEPFAKE ──
       if (category === "DEEPFAKE") {
@@ -127,6 +139,13 @@ const shareVerdict = async () => {
           setError(`Image analysis failed: ${data.error}`)
         } else {
           setResult({ ...data, isImageResult: true })
+          addEntry({
+            query: imageFile ? imageFile.name : message.slice(0, 120),
+            category: "DEEPFAKE",
+            verdict: data.verdict,
+            timestamp: Date.now(),
+            result: { ...data, isImageResult: true }
+          })
         }
 
       // ── PHISHING ──
@@ -141,6 +160,13 @@ const shareVerdict = async () => {
           setError(`URL scan failed: ${data.error}`)
         } else {
           setResult({ ...data, isPhishingResult: true })
+          addEntry({
+            query: message.slice(0, 120),
+            category: "PHISHING",
+            verdict: data.verdict,
+            timestamp: Date.now(),
+            result: { ...data, isPhishingResult: true }
+          })
         }
 
       // ── TEXT FACT CHECK ──
@@ -156,6 +182,13 @@ const shareVerdict = async () => {
           setError("AI service temporarily unavailable. Please try again.")
         } else {
           setResult(data)
+          addEntry({
+            query: message.slice(0, 120),
+            category,
+            verdict: data.verdict,
+            timestamp: Date.now(),
+            result: data
+          })
         }
       }
 
@@ -177,6 +210,13 @@ const shareVerdict = async () => {
         beamWidth={3} beamHeight={30} beamNumber={20}
         lightColor="#ffffff" speed={2} noiseIntensity={1.75}
         scale={0.2} rotation={30}
+      />
+
+      {/* ── HISTORY SIDEBAR ── */}
+      <History
+        history={history}
+        onSelect={handleHistorySelect}
+        onClear={clearHistory}
       />
 
       <div className="content">
@@ -396,6 +436,7 @@ const shareVerdict = async () => {
                 </div>
               )}
 
+              {/* Footer */}
               <div className="card-footer">
                 <span className="footer-brand">FactGuard AI</span>
                 <div className="footer-status">

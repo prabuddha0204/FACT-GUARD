@@ -39,7 +39,6 @@ async function browsePage(url) {
       const result = await firecrawl.scrape(url, { formats: ["markdown"] });
       return result.data?.markdown?.slice(0, 4000) || "";
     }
-    // Fallback if Firecrawl not available
     const response = await axios.get(url, {
       timeout: 5000,
       headers: {
@@ -55,7 +54,6 @@ async function browsePage(url) {
       .trim();
     return cleanText.slice(0, 4000);
   } catch (err) {
-    console.error("Browsing error:", err.message);
     return "";
   }
 }
@@ -195,8 +193,6 @@ app.post("/scan-url", async (req, res) => {
 
     // Step 2: AI Agent Browsing (Firecrawl or fallback)
     let pageContent = await browsePage(expandedUrl);
-    console.log("AI agent visited:", expandedUrl);
-    console.log("Extracted content length:", pageContent ? pageContent.length : 0);
 
     if (!pageContent || pageContent.length < 100) {
       pageContent = "No meaningful page content extracted. Analyze using URL structure.";
@@ -630,10 +626,8 @@ app.post("/whatsapp", async (req, res) => {
     if (category === "PHISHING") {
       const urlMatch = incomingMsg.match(/https?:\/\/[^\s]+/);
       const url = urlMatch ? urlMatch[0] : incomingMsg;
-
       const scanRes = await axios.post("https://factguard-backend.onrender.com/scan-url", { url });
       const data = scanRes.data;
-
       replyText =
         `🔍 *FactGuard URL Scan*\n\n` +
         `Verdict: *${data.verdict}*\n` +
@@ -643,15 +637,12 @@ app.post("/whatsapp", async (req, res) => {
         `_Powered by FactGuard AI_`;
     } else {
       const checkRes = await axios.post("https://factguard-backend.onrender.com/check", {
-        text: incomingMsg,
-        category,
+        text: incomingMsg, category,
       });
       const data = checkRes.data;
-
       const verdictEmoji = {
         True: "✅", False: "❌", Misleading: "⚠️", Unverified: "❓",
       }[data.verdict] || "🔍";
-
       replyText =
         `${verdictEmoji} *FactGuard Verdict: ${data.verdict}*\n` +
         `Confidence: ${data.confidence}\n\n` +
