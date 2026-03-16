@@ -6,7 +6,6 @@ const categories = [
   { label: "DEEPFAKE", active: true },
   { label: "PHISHING", active: true },
   { label: "SCAM DETECTION", active: false },
-  
 ]
 
 function InputBar({ onSend, prefillText, onPrefillUsed }) {
@@ -15,6 +14,7 @@ function InputBar({ onSend, prefillText, onPrefillUsed }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [focused, setFocused] = useState(false)
   const [imageFile, setImageFile] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
 
   const menuRef = useRef(null)
   const plusRef = useRef(null)
@@ -34,7 +34,10 @@ function InputBar({ onSend, prefillText, onPrefillUsed }) {
   }, [prefillText])
 
   useEffect(() => {
-    if (!isDeepfake) setImageFile(null)
+    if (!isDeepfake) {
+      setImageFile(null)
+      setImagePreview(null)
+    }
   }, [selectedCategory])
 
   const handleSend = () => {
@@ -42,6 +45,7 @@ function InputBar({ onSend, prefillText, onPrefillUsed }) {
     onSend(message, selectedCategory, imageFile)
     setMessage("")
     setImageFile(null)
+    setImagePreview(null)
   }
 
   const handleKeyDown = (e) => {
@@ -55,15 +59,70 @@ function InputBar({ onSend, prefillText, onPrefillUsed }) {
     const file = e.target.files[0]
     if (!file) return
     if (isDeepfake) {
-      // In deepfake mode — set as imageFile for analysis
       setImageFile(file)
       setMessage(file.name)
-    } else {
-      // In other modes — just show filename (future use)
-      setMessage(file.name)
-    }
+      const url = URL.createObjectURL(file)
+      setImagePreview(url)
+    } 
     setMenuOpen(false)
   }
+
+  // Paste image from clipboard (Ctrl+V)
+  useEffect(() => {
+    const handlePaste = (e) => {
+      if (selectedCategory !== "DEEPFAKE") return
+      const items = e.clipboardData?.items
+      if (!items) return
+      for (const item of items) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile()
+          setImageFile(file)
+          
+          const url = URL.createObjectURL(file)
+          setImagePreview(url)
+          break
+        }
+      }
+    }
+    window.addEventListener("paste", handlePaste)
+    return () => window.removeEventListener("paste", handlePaste)
+  }, [selectedCategory])
+
+  // Drag and drop image
+  useEffect(() => {
+    const card = document.querySelector(".inputcard")
+    if (!card) return
+
+    const handleDragOver = (e) => {
+      if (selectedCategory !== "DEEPFAKE") return
+      e.preventDefault()
+      card.classList.add("inputcard-dragover")
+    }
+    const handleDragLeave = () => {
+      card.classList.remove("inputcard-dragover")
+    }
+    const handleDrop = (e) => {
+      e.preventDefault()
+      card.classList.remove("inputcard-dragover")
+      if (selectedCategory !== "DEEPFAKE") return
+      const file = e.dataTransfer.files[0]
+      if (file && file.type.startsWith("image/")) {
+        setImageFile(file)
+        
+        const url = URL.createObjectURL(file)
+        setImagePreview(url)
+      }
+    }
+
+    card.addEventListener("dragover", handleDragOver)
+    card.addEventListener("dragleave", handleDragLeave)
+    card.addEventListener("drop", handleDrop)
+    return () => {
+      card.removeEventListener("dragover", handleDragOver)
+      card.removeEventListener("dragleave", handleDragLeave)
+      card.removeEventListener("drop", handleDrop)
+    }
+  }, [selectedCategory])
 
   useEffect(() => {
     const handler = (e) => {
@@ -130,7 +189,7 @@ function InputBar({ onSend, prefillText, onPrefillUsed }) {
             {menuOpen && (
               <div className="attach-menu" ref={menuRef}>
 
-                {/* Photo / Video — triggers deepfake in DEEPFAKE mode */}
+                {/* Photo / Video */}
                 <button
                   className="attach-option"
                   onClick={() => photoInputRef.current?.click()}
@@ -149,9 +208,7 @@ function InputBar({ onSend, prefillText, onPrefillUsed }) {
                       <polyline points="21 15 16 10 5 21"/>
                     </svg>
                   </span>
-                  <span className="attach-label">
-                    {isDeepfake ? "Photo / Video" : "Photo / Video"}
-                  </span>
+                  <span className="attach-label">Photo / Video</span>
                 </button>
 
                 {/* Document */}
@@ -209,20 +266,43 @@ function InputBar({ onSend, prefillText, onPrefillUsed }) {
             )}
           </div>
 
+          {/* Image Preview (ChatGPT style) */}
+          {imagePreview && (
+            <div className="image-preview-wrap">
+              <div className="image-preview-thumb">
+                <img src={imagePreview} alt="preview" className="image-preview-img" />
+                <button
+                  className="image-preview-remove"
+                  onClick={() => {
+                    setImageFile(null)
+                    setImagePreview(null)
+                    setMessage("")
+                  }}
+                >✕</button>
+              </div>
+              <span className="image-preview-name">{imageFile?.name || "Image"}</span>
+            </div>
+          )}
+
           {/* Textarea */}
           <textarea
             ref={textareaRef}
             className="inputcard-textarea"
-            placeholder={isDeepfake
-              ? "Paste image URL or use + to upload image..."
-              : selectedCategory === "PHISHING"
-              ? "Enter a URL to scan for PHISHING...."
-              : "Enter a claim, URL, or paste content to verify…"
-            }
+            placeholder={imageFile
+  ? ""
+  : isDeepfake
+  ? "Paste image, drag & drop, or use + to upload..."
+  : selectedCategory === "PHISHING"
+  ? "Enter a URL to scan for PHISHING...."
+  : "Enter a claim, URL, or paste content to verify…"
+}
             value={message}
             onChange={e => {
               setMessage(e.target.value)
-              if (imageFile) setImageFile(null)
+              if (imageFile) {
+                setImageFile(null)
+                setImagePreview(null)
+              }
             }}
             onKeyDown={handleKeyDown}
             onFocus={() => setFocused(true)}

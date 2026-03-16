@@ -524,3 +524,115 @@
 .url-info-resolved {
   color: var(--clr-false);
 }
+.inputcard-dragover {
+  border-color: #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.05) !important;
+}
+.image-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0 6px 4px;
+  flex-shrink: 0;
+}
+
+.image-preview-thumb {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: visible;
+}
+
+.image-preview-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.image-preview-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 16px;
+  height: 16px;
+  background: #ef4444;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.image-preview-name {
+  font-size: 9px;
+  color: #64748b;
+  max-width: 52px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+.image-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0 6px 4px;
+  flex-shrink: 0;
+}
+
+.image-preview-thumb {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: visible;
+}
+
+.image-preview-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.image-preview-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 16px;
+  height: 16px;
+  background: #ef4444;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-preview-name {
+  font-size: 9px;
+  color: #64748b;
+  max-width: 52px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.inputcard-dragover {
+  border-color: #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.05) !important;
+}
