@@ -1,7 +1,7 @@
 import "./App.css"
 import Beams from "./Beams"
 import InputBar from "./InputBar"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 function parseConfidence(conf) {
   if (!conf) return 0
@@ -49,13 +49,33 @@ const STATS = [
   { value: "REAL-TIME", label: "Web Search" },
 ]
 
+const BACKEND = "http://localhost:5000"
+
+// Maps phishing verdicts to our color system
+function getVerdictClass(verdict) {
+  if (verdict === "SAFE") return "True"
+  if (verdict === "SUSPICIOUS") return "Misleading"
+  if (verdict === "PHISHING") return "False"
+  return verdict
+}
+
 function App() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [suggestionText, setSuggestionText] = useState(null)
 
-  const handleSend = async (message, category) => {
+  // PWA Web Share Target
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const sharedText = params.get('text') || params.get('url') || params.get('title')
+    if (sharedText) {
+      setSuggestionText(sharedText)
+      window.history.replaceState({}, '', '/')
+    }
+  }, [])
+
+  const handleSend = async (message, category, imageFile) => {
     console.log("User message:", message)
     console.log("Category:", category)
     setLoading(true)
@@ -63,18 +83,61 @@ function App() {
     setResult(null)
 
     try {
-      const res = await fetch("https://factguard-backend.onrender.com/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: message, category })
-      })
-      const data = await res.json()
-      console.log("AI Result:", data)
-      if (data.error) {
-        setError("AI service temporarily unavailable. Please try again.")
+      // ── DEEPFAKE ──
+      if (category === "DEEPFAKE") {
+        let data
+        if (imageFile) {
+          const formData = new FormData()
+          formData.append("image", imageFile)
+          const res = await fetch(`${BACKEND}/check-image-file`, {
+            method: "POST",
+            body: formData
+          })
+          data = await res.json()
+        } else {
+          const res = await fetch(`${BACKEND}/check-image`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ imageUrl: message })
+          })
+          data = await res.json()
+        }
+        if (data.error) {
+          setError(`Image analysis failed: ${data.error}`)
+        } else {
+          setResult({ ...data, isImageResult: true })
+        }
+
+      // ── PHISHING ──
+      } else if (category === "PHISHING") {
+        const res = await fetch(`${BACKEND}/scan-url`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: message })
+        })
+        const data = await res.json()
+        if (data.error) {
+          setError(`URL scan failed: ${data.error}`)
+        } else {
+          setResult({ ...data, isPhishingResult: true })
+        }
+
+      // ── TEXT FACT CHECK ──
       } else {
-        setResult(data)
+        const res = await fetch(`${BACKEND}/check`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: message, category })
+        })
+        const data = await res.json()
+        console.log("AI Result:", data)
+        if (data.error) {
+          setError("AI service temporarily unavailable. Please try again.")
+        } else {
+          setResult(data)
+        }
       }
+
     } catch (err) {
       console.error("API error:", err)
       setError("Cannot connect to server.")
@@ -85,6 +148,9 @@ function App() {
 
   const confPct = result ? parseConfidence(result.confidence) : 0
   const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+
+  // For phishing results, map verdict to our color classes
+  const verdictClass = result ? getVerdictClass(result.verdict) : ""
 
   return (
     <>
@@ -101,8 +167,6 @@ function App() {
 
       {/* ── CENTER HERO ── */}
       <div className="hero-center">
-
-        {/* Stats row */}
         <div className="stats-row">
           {STATS.map((s, i) => (
             <div className="stat-item" key={i} style={{ animationDelay: `${i * 0.08}s` }}>
@@ -112,13 +176,9 @@ function App() {
           ))}
         </div>
 
-        {/* Divider */}
         <div className="hero-divider" />
-
-        {/* Suggestion label */}
         <p className="suggestions-label">Try an example</p>
 
-        {/* Suggestion chips */}
         <div className="suggestions-grid">
           {SUGGESTIONS.map((s, i) => (
             <button
@@ -132,7 +192,6 @@ function App() {
             </button>
           ))}
         </div>
-
       </div>
 
       <div className="app-container">
@@ -183,45 +242,94 @@ function App() {
       {/* ── RESULT ── */}
       {result && (
         <div className="popup-backdrop" onClick={() => setResult(null)}>
-          <div className={`popup-glow ${result.verdict}`} />
+          <div className={`popup-glow ${verdictClass}`} />
 
-          <div className={`resultBox ${result.verdict}`} onClick={e => e.stopPropagation()}>
-            <div className={`card-top-border ${result.verdict}`} />
+          <div className={`resultBox ${verdictClass}`} onClick={e => e.stopPropagation()}>
+            <div className={`card-top-border ${verdictClass}`} />
             <div className="card-sweep" />
             <button className="popup-close" onClick={() => setResult(null)}>✕</button>
 
             <div className="card-inner">
-              <p className="card-eyebrow">Fact-check result</p>
+              <p className="card-eyebrow">
+                {result.isImageResult ? "Deepfake Analysis Result"
+                  : result.isPhishingResult ? "URL Phishing Scan Result"
+                  : "Fact-check result"}
+              </p>
 
+              {/* Verdict + Ring/Score */}
               <div className="verdict-main-row">
                 <div className="verdict-left">
                   <p className="verdict-label-sm">Verdict</p>
-                  <div className={`verdict-word ${result.verdict}`}>{result.verdict}</div>
-                  <span className={`verdict-pill ${result.verdict}`}>
+                  <div className={`verdict-word ${verdictClass}`}>{result.verdict}</div>
+                  <span className={`verdict-pill ${verdictClass}`}>
                     <span className="verdict-dot" />
-                    {result.verdict === "True"       && "Claim verified"}
-                    {result.verdict === "False"      && "Claim debunked"}
-                    {result.verdict === "Misleading" && "Partially accurate"}
-                    {result.verdict === "Unverified" && "Cannot verify"}
+                    {/* Text verdicts */}
+                    {result.verdict === "True"        && "Claim verified"}
+                    {result.verdict === "False"       && "Claim debunked"}
+                    {result.verdict === "Misleading"  && "Partially accurate"}
+                    {result.verdict === "Unverified"  && "Cannot verify"}
+                    {/* Image verdicts */}
+                    {result.isImageResult && result.label}
+                    {/* Phishing verdicts */}
+                    {result.verdict === "SAFE"        && "No threats detected"}
+                    {result.verdict === "SUSPICIOUS"  && "Potential phishing domain"}
+                    {result.verdict === "PHISHING"    && "Confirmed phishing site"}
                   </span>
                 </div>
-                <ConfRing pct={confPct} verdict={result.verdict} />
+
+                {result.isImageResult ? (
+                  <div className="deepfake-score-wrap">
+                    <div className="deepfake-score-number" style={{
+                      color: result.aiGeneratedProbability >= 80 ? "var(--clr-false)"
+                        : result.aiGeneratedProbability >= 50 ? "var(--clr-mis)"
+                        : result.aiGeneratedProbability >= 20 ? "var(--clr-unv)"
+                        : "var(--clr-true)"
+                    }}>
+                      {result.aiGeneratedProbability}%
+                    </div>
+                    <div className="deepfake-score-label">AI Generated</div>
+                  </div>
+                ) : (
+                  <ConfRing pct={confPct} verdict={verdictClass} />
+                )}
               </div>
 
               <div className="card-divider" />
 
+              {/* URL info for phishing results */}
+              {result.isPhishingResult && (
+                <div className="url-info-wrap">
+                  <div className="url-info-row">
+                    <span className="url-info-label">Submitted URL</span>
+                    <span className="url-info-value">{result.submittedUrl}</span>
+                  </div>
+                  {result.resolvedUrl && result.resolvedUrl !== result.submittedUrl && (
+                    <div className="url-info-row">
+                      <span className="url-info-label">
+                        {result.shortenerDetected ? "⚠ Resolved Destination" : "Final URL"}
+                      </span>
+                      <span className="url-info-value url-info-resolved">{result.resolvedUrl}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Explanation */}
               <div className="explanation-wrap">
                 <p className="explanation-lbl">Analysis</p>
                 <p className="explanation-text">{result.explanation}</p>
               </div>
 
+              {/* Breakdown */}
               {result.breakdown && result.breakdown.length > 0 && (
                 <div className="breakdown-wrap">
-                  <p className="breakdown-lbl">Why this verdict</p>
+                  <p className="breakdown-lbl">
+                    {result.isImageResult ? "Forensic Breakdown" : "Why this verdict"}
+                  </p>
                   <div className="breakdown-list">
                     {result.breakdown.map((item, i) => (
                       <div className="breakdown-item" key={i}>
-                        <div className={`breakdown-dot ${result.verdict}`} />
+                        <div className={`breakdown-dot ${verdictClass}`} />
                         <div className="breakdown-content">
                           <span className="breakdown-point">{item.point}</span>
                           <span className="breakdown-detail">{item.detail}</span>
@@ -232,7 +340,28 @@ function App() {
                 </div>
               )}
 
-              {result.sources && result.sources.length > 0 && (
+              {/* Manipulation Tactic — Fake News */}
+              {result.manipulationTactic && result.manipulationTactic !== "None" && (
+                <div className="tactic-wrap">
+                  <p className="tactic-lbl">Manipulation Tactic Used</p>
+                  <div className="tactic-badge">⚠️ {result.manipulationTactic}</div>
+                </div>
+              )}
+
+              {/* Scam Signals — KYC */}
+              {result.scamSignals && result.scamSignals.length > 0 && (
+                <div className="scam-signals-wrap">
+                  <p className="scam-signals-lbl">Scam Signals Detected</p>
+                  <div className="scam-signals-list">
+                    {result.scamSignals.map((signal, i) => (
+                      <div key={i} className="scam-signal-badge">⚠ {signal}</div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Sources — text results only */}
+              {!result.isImageResult && !result.isPhishingResult && result.sources && result.sources.length > 0 && (
                 <div className="sources-wrap">
                   <p className="sources-lbl">Sources</p>
                   <div className="sources-list">
@@ -258,13 +387,15 @@ function App() {
                 </div>
               )}
 
+              {/* Footer */}
               <div className="card-footer">
                 <span className="footer-brand">FactGuard AI</span>
                 <div className="footer-status">
-                  <div className={`footer-status-dot ${result.verdict}`} />
+                  <div className={`footer-status-dot ${verdictClass}`} />
                   <span className="footer-status-txt">Analyzed · {now}</span>
                 </div>
               </div>
+
             </div>
           </div>
         </div>

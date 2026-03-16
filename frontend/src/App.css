@@ -14,8 +14,6 @@
   --clr-mis-glow:   rgba(251, 191, 36, 0.25);
   --clr-unv:        #94a3b8;
   --clr-unv-glow:   rgba(148, 163, 184, 0.18);
-
-  /* Input card height ~130px + gap */
   --inputcard-h: 160px;
 }
 
@@ -27,11 +25,10 @@
 .beams-container { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -1; }
 
 /* ════════════════════════════════════════
-   HERO CENTER — fixed above input card
+   HERO CENTER
 ════════════════════════════════════════ */
 .hero-center {
   position: fixed;
-  /* sit above the input card: card is at bottom:8vh ~130px tall, add 24px gap */
   bottom: calc(8vh + var(--inputcard-h) + 24px);
   left: 50%;
   transform: translateX(-50%);
@@ -44,7 +41,6 @@
   pointer-events: none;
 }
 
-/* Stats row */
 .stats-row {
   display: flex; gap: 6px;
   pointer-events: none;
@@ -59,7 +55,6 @@
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
   animation: fadeUp 0.5s ease both;
 }
-/* ── FONT FIX: stat values now use Manrope ── */
 .stat-value {
   font-family: 'Manrope', sans-serif;
   font-size: 20px; font-weight: 800;
@@ -115,7 +110,7 @@
 }
 
 /* ════════════════════════════════════════
-   CENTER UI — input card wrapper
+   CENTER UI
 ════════════════════════════════════════ */
 .center-ui {
   position: fixed; bottom: 8vh; left: 50%; transform: translateX(-50%);
@@ -151,7 +146,6 @@
     inset 0 -1px 0 rgba(0,0,0,0.2);
 }
 
-/* Category row */
 .inputcard-cats {
   display: flex; align-items: center; gap: 12px;
   padding: 13px 18px 11px; flex-wrap: wrap;
@@ -187,13 +181,11 @@
   padding: 1px 5px; border-radius: 4px;
 }
 
-/* Internal divider */
 .inputcard-divider {
   height: 1px; margin: 0 18px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07) 20%, rgba(255,255,255,0.07) 80%, transparent);
 }
 
-/* Bottom row */
 .inputcard-row {
   display: flex; align-items: flex-end;
   gap: 10px; padding: 12px 14px 12px 16px;
@@ -207,7 +199,7 @@
   color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.18s ease;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
 }
-.inputcard-attach:hover { background: rgba(255,255,255,0.11); color: rgba(200, 185, 185, 0.8); border-color: rgba(255,255,255,0.2); }
+.inputcard-attach:hover { background: rgba(255,255,255,0.11); color: rgba(200,185,185,0.8); border-color: rgba(255,255,255,0.2); }
 .inputcard-attach-open { background: rgba(255,255,255,0.13) !important; color: #fff !important; border-color: rgba(255,255,255,0.25) !important; }
 
 .inputcard-textarea {
@@ -230,15 +222,14 @@
 }
 .inputcard-send-active {
   background: #ebe5e5 !important; color: #000 !important;
-  box-shadow: 0 0 28px rgba(255,255,255,0.22), 0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(222, 220, 220, 0.9) !important;
+  box-shadow: 0 0 28px rgba(255,255,255,0.22), 0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(222,220,220,0.9) !important;
 }
 .inputcard-send-active:hover {
   transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 0 36px rgba(255,255,255,0.3), 0 6px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(224, 222, 222, 0.9) !important;
+  box-shadow: 0 0 36px rgba(255,255,255,0.3), 0 6px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(224,222,222,0.9) !important;
 }
 .inputcard-send-active:active { transform: scale(0.98); }
 
-/* Attach menu */
 .attach-menu { position: absolute; bottom: calc(100% + 10px); left: 0; background: rgba(14,14,20,0.92); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 6px; backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); box-shadow: 0 12px 40px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 2px; min-width: 200px; animation: menuPop 0.2s cubic-bezier(0.34,1.56,0.64,1) forwards; z-index: 50; }
 @keyframes menuPop { from { opacity: 0; transform: translateY(8px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .attach-option { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 11px; border: none; background: transparent; color: rgba(255,255,255,0.65); cursor: pointer; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 500; text-align: left; transition: background 0.15s, color 0.15s; animation: optionFade 0.2s ease forwards; opacity: 0; }
@@ -274,7 +265,7 @@
   background: rgba(8,8,13,0.75); border-radius: 26px;
   backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%);
   box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 48px 120px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.06);
-  color: rgb(196, 183, 183); animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+  color: rgb(196,183,183); animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
   opacity: 0; transform: scale(0.9) translateY(20px); z-index: 1;
   scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
 }
@@ -401,3 +392,135 @@
 .ldot:nth-child(3) { animation-delay: 0.32s; }
 @keyframes ldPulse { 0%,100% { opacity: 0.2; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.2); } }
 .loading-text { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: rgba(255,255,255,0.28); margin: 0; }
+
+/* ════════════════════════════════════════
+   DEEPFAKE
+════════════════════════════════════════ */
+.deepfake-score-wrap {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px; flex-shrink: 0;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px; padding: 16px 20px;
+}
+.deepfake-score-number {
+  font-family: 'Raleway', sans-serif;
+  font-size: 42px; font-weight: 900;
+  letter-spacing: -2px; line-height: 1;
+}
+.deepfake-score-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+}
+.deepfake-upload-row {
+  display: flex; align-items: center;
+  gap: 10px; padding: 10px 16px 0;
+}
+.deepfake-upload-btn {
+  display: flex; align-items: center; gap: 7px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 12px; font-weight: 700;
+  padding: 7px 16px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.55);
+  cursor: pointer; transition: all 0.18s ease;
+}
+.deepfake-upload-btn:hover {
+  background: rgba(255,255,255,0.11);
+  color: #fff; border-color: rgba(255,255,255,0.25);
+}
+.deepfake-upload-btn-active {
+  background: rgba(74,222,128,0.1) !important;
+  border-color: rgba(74,222,128,0.3) !important;
+  color: #4ade80 !important;
+}
+.deepfake-upload-or {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.2);
+  text-transform: uppercase; white-space: nowrap;
+}
+
+/* ════════════════════════════════════════
+   MANIPULATION TACTIC
+════════════════════════════════════════ */
+.tactic-wrap {
+  margin-top: 12px;
+  animation: fadeUp 0.45s 0.4s ease both;
+}
+.tactic-lbl {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  margin-bottom: 8px;
+}
+.tactic-badge {
+  display: inline-flex; align-items: center;
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px; font-weight: 700;
+  padding: 6px 16px; border-radius: 999px;
+  background: rgba(251,191,36,0.1);
+  border: 1px solid rgba(251,191,36,0.3);
+  color: var(--clr-mis);
+}
+
+/* ════════════════════════════════════════
+   SCAM SIGNALS
+════════════════════════════════════════ */
+.scam-signals-wrap {
+  margin-top: 12px;
+  animation: fadeUp 0.45s 0.4s ease both;
+}
+.scam-signals-lbl {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--clr-false);
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+.scam-signals-list {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.scam-signal-badge {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px; font-weight: 600;
+  padding: 4px 12px; border-radius: 999px;
+  background: rgba(248,113,113,0.1);
+  border: 1px solid rgba(248,113,113,0.25);
+  color: var(--clr-false);
+}
+
+/* ════════════════════════════════════════
+   URL INFO — Phishing result
+════════════════════════════════════════ */
+.url-info-wrap {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: 14px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.055);
+  border-radius: 12px; padding: 12px 14px;
+  animation: fadeUp 0.45s 0.2s ease both;
+}
+.url-info-row {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.url-info-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(255,255,255,0.25);
+}
+.url-info-value {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  word-break: break-all; line-height: 1.5;
+}
+.url-info-resolved {
+  color: var(--clr-false);
+}
