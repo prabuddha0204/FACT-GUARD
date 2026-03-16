@@ -56,22 +56,18 @@ export default function History({ history, onSelect, onClear }) {
           position: fixed;
           top: 145px;
           left: 24px;
-          z-index: 100;
+          z-index: 39;
           background: rgba(15,23,42,0.6);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
           border: 1px solid rgba(255,255,255,0.07);
           border-radius: 8px;
           color: #475569;
-          padding: 7px 13px;
+          padding: 8px;
           cursor: pointer;
           display: flex;
           align-items: center;
-          gap: 7px;
-          font-size: 12px;
-          font-weight: 600;
-          font-family: 'Manrope', sans-serif;
-          letter-spacing: 0.3px;
+          justify-content: center;
           transition: all 0.2s;
         }
         .fg-history-btn:hover {
@@ -263,10 +259,8 @@ export default function History({ history, onSelect, onClear }) {
 
         @media (max-width: 768px) {
           .fg-history-btn {
-            top: 150px;
+            top: 158px;
             left: 16px;
-            font-size: 11px;
-            padding: 6px 10px;
           }
           .fg-sidebar {
             width: 280px;
@@ -274,17 +268,17 @@ export default function History({ history, onSelect, onClear }) {
         }
       `}</style>
 
-      {/* ── TOGGLE BUTTON — hamburger icon ── */}
+      {/* ── HAMBURGER BUTTON ── */}
       <button
         className={`fg-history-btn ${open ? "fg-active" : ""}`}
         onClick={() => setOpen(v => !v)}
+        title="History"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
           <line x1="3" y1="6" x2="21" y2="6"/>
           <line x1="3" y1="12" x2="21" y2="12"/>
           <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
-        History
       </button>
 
       {/* ── OVERLAY ── */}
@@ -292,10 +286,9 @@ export default function History({ history, onSelect, onClear }) {
 
       {/* ── SIDEBAR ── */}
       <div className={`fg-sidebar ${open ? "fg-open" : ""}`}>
-
         <div className="fg-sidebar-header">
           <div>
-            <div className="fg-sidebar-title">History</div>
+            <div className="fg-sidebar-title">CHECK YOUR</div>
             <div className="fg-sidebar-sub">Last {MAX_HISTORY} searches</div>
           </div>
           <div className="fg-hdr-btns">
