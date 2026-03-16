@@ -656,3 +656,181 @@
 .share-btn:hover {
   background: rgba(255,255,255,0.14);
 }
+/* ════════════════════════════════════════
+   MOBILE RESPONSIVE
+════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Heading */
+  .content {
+    top: 14px;
+    left: 16px;
+    right: 16px;
+  }
+  .mainh {
+    font-size: 28px;
+  }
+  .subh {
+    font-size: 13px;
+    opacity: 0.7;
+  }
+
+  /* History button */
+  .fg-history-btn {
+    top: 90px !important;
+    left: 16px !important;
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+  }
+
+  /* Hero center */
+  .hero-center {
+    bottom: calc(6vh + var(--inputcard-h) + 16px);
+    width: 94vw;
+    gap: 10px;
+  }
+
+  /* Stats */
+  .stats-row {
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .stat-item {
+    padding: 7px 12px;
+  }
+  .stat-value {
+    font-size: 15px;
+  }
+  .stat-label {
+    font-size: 7px;
+  }
+
+  /* Suggestions */
+  .suggestions-grid {
+    gap: 6px;
+  }
+  .suggestion-chip {
+    max-width: 160px;
+    padding: 7px 11px;
+  }
+  .suggestion-chip-text {
+    font-size: 11px;
+  }
+
+  /* Input card */
+  .center-ui {
+    bottom: 4vh;
+    width: 94vw;
+  }
+  .inputcard {
+    border-radius: 18px;
+  }
+  .inputcard-cats {
+    padding: 10px 14px 8px;
+    gap: 8px;
+  }
+  .inputcard-cats-label {
+    display: none;
+  }
+  .inputcard-cat-pills {
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .inputcard-cat-pills::-webkit-scrollbar { display: none; }
+  .icat-pill {
+    font-size: 10px;
+    padding: 3px 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .inputcard-row {
+    padding: 10px 10px 10px 12px;
+    gap: 8px;
+  }
+  .inputcard-textarea {
+    font-size: 14px;
+  }
+  .inputcard-send {
+    padding: 0 12px;
+    height: 36px;
+    font-size: 11px;
+    gap: 5px;
+  }
+  .inputcard-attach {
+    width: 34px;
+    height: 34px;
+  }
+
+  /* Result card */
+  .resultBox {
+    width: 95vw;
+    max-height: 90vh;
+    border-radius: 20px;
+  }
+  .card-inner {
+    padding: 18px 18px 16px;
+  }
+  .verdict-word {
+    font-size: 38px;
+    letter-spacing: -1.5px;
+  }
+  .verdict-main-row {
+    gap: 12px;
+  }
+  .conf-ring-container {
+    width: 72px;
+    height: 72px;
+  }
+  .conf-ring-svg {
+    width: 72px;
+    height: 72px;
+  }
+  .conf-pct {
+    font-size: 15px;
+  }
+  .explanation-text {
+    font-size: 12.5px;
+  }
+  .breakdown-point {
+    font-size: 11px;
+  }
+  .breakdown-detail {
+    font-size: 11px;
+  }
+  .source-title {
+    font-size: 11px;
+  }
+
+  /* Popup backdrop */
+  .popup-backdrop {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  /* Loading */
+  .loadingBox {
+    padding: 20px 20px 18px;
+  }
+
+  /* Attach menu */
+  .attach-menu {
+    min-width: 170px;
+  }
+}
+
+@media (max-width: 400px) {
+  .mainh { font-size: 24px; }
+  .subh  { font-size: 12px; }
+  .stat-value { font-size: 13px; }
+  .verdict-word { font-size: 32px; }
+  .suggestion-chip { max-width: 140px; }
+}
+@media (max-width: 768px) {
+  .fg-history-btn {
+    top: 130px !important;
+  }
+}

@@ -54,14 +54,14 @@ export default function History({ history, onSelect, onClear }) {
       <style>{`
         .fg-history-btn {
           position: fixed;
-          top: 125px;
+          top: 145px;
           left: 24px;
           z-index: 100;
           background: rgba(15,23,42,0.6);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
           border: 1px solid rgba(255,255,255,0.07);
-          border-radius: 4px;
+          border-radius: 8px;
           color: #475569;
           padding: 7px 13px;
           cursor: pointer;
@@ -69,7 +69,7 @@ export default function History({ history, onSelect, onClear }) {
           align-items: center;
           gap: 7px;
           font-size: 12px;
-          font-weight: 500;
+          font-weight: 600;
           font-family: 'Manrope', sans-serif;
           letter-spacing: 0.3px;
           transition: all 0.2s;
@@ -83,14 +83,6 @@ export default function History({ history, onSelect, onClear }) {
           background: rgba(29,78,216,0.12);
           border-color: rgba(59,130,246,0.25);
           color: #93c5fd;
-        }
-        .fg-badge {
-          background: #2563eb;
-          color: white;
-          border-radius: 20px;
-          padding: 1px 7px;
-          font-size: 10px;
-          font-weight: 800;
         }
         .fg-overlay {
           position: fixed;
@@ -108,7 +100,7 @@ export default function History({ history, onSelect, onClear }) {
           top: 0; left: 0;
           width: 300px;
           height: 100vh;
-          background: rgba(23, 25, 31, 0.92);
+          background: rgba(23, 25, 31, 0.95);
           backdrop-filter: blur(40px);
           -webkit-backdrop-filter: blur(40px);
           border-right: 1px solid rgba(255,255,255,0.05);
@@ -116,7 +108,7 @@ export default function History({ history, onSelect, onClear }) {
           display: flex;
           flex-direction: column;
           font-family: 'Manrope', sans-serif;
-          box-shadow: 8px 0 48px rgba(20, 19, 19, 0.6);
+          box-shadow: 8px 0 48px rgba(0,0,0,0.6);
           transform: translateX(-100%);
           transition: transform 0.26s cubic-bezier(0.16,1,0.3,1);
         }
@@ -199,7 +191,7 @@ export default function History({ history, onSelect, onClear }) {
         .fg-item {
           width: 100%;
           text-align: left;
-          background: rgba(22, 4, 4, 0.02);
+          background: rgba(255,255,255,0.02);
           border: 1px solid rgba(255,255,255,0.04);
           border-radius: 11px;
           padding: 11px 13px;
@@ -268,19 +260,31 @@ export default function History({ history, onSelect, onClear }) {
           font-family: 'Manrope', sans-serif;
           flex-shrink: 0;
         }
+
+        @media (max-width: 768px) {
+          .fg-history-btn {
+            top: 150px;
+            left: 16px;
+            font-size: 11px;
+            padding: 6px 10px;
+          }
+          .fg-sidebar {
+            width: 280px;
+          }
+        }
       `}</style>
 
-      {/* ── TOGGLE BUTTON ── */}
+      {/* ── TOGGLE BUTTON — hamburger icon ── */}
       <button
         className={`fg-history-btn ${open ? "fg-active" : ""}`}
         onClick={() => setOpen(v => !v)}
       >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
-        HISTORY
-        
+        History
       </button>
 
       {/* ── OVERLAY ── */}
@@ -291,7 +295,7 @@ export default function History({ history, onSelect, onClear }) {
 
         <div className="fg-sidebar-header">
           <div>
-            <div className="fg-sidebar-title">CHECK YOUR</div>
+            <div className="fg-sidebar-title">History</div>
             <div className="fg-sidebar-sub">Last {MAX_HISTORY} searches</div>
           </div>
           <div className="fg-hdr-btns">
