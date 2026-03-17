@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 360px;
+      font-family: 'DM Sans', Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 0;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1e40af, #1d4ed8);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header .logo {
+      width: 32px; height: 32px;
+      background: white;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: -0.3px;
+    }
+
+    .header span {
+      font-size: 11px;
+      color: #93c5fd;
+      font-weight: 400;
+    }
+
+    .body { padding: 16px; }
+
+    textarea {
+      width: 100%;
+      height: 90px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-family: 'DM Sans', Arial, sans-serif;
+      font-size: 13px;
+      padding: 10px 12px;
+      resize: none;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    textarea:focus { border-color: #3b82f6; }
+
+    textarea::placeholder { color: #64748b; }
+
+    select {
+      width: 100%;
+      margin: 10px 0;
+      padding: 9px 12px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-family: 'DM Sans', Arial, sans-serif;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    button {
+      width: 100%;
+      padding: 11px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', Arial, sans-serif;
+      transition: opacity 0.2s;
+      letter-spacing: 0.2px;
+    }
+
+    button:hover { opacity: 0.9; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    #result {
+      display: none;
+      margin-top: 14px;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .result-header {
+      padding: 12px 14px 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .verdict-badge {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .confidence {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0.8;
+    }
+
+    .result-body {
+      padding: 0 14px 12px;
+      font-size: 12.5px;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+
+    .signals {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: rgba(0,0,0,0.15);
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 500;
+    }
+
+    /* Verdict colors */
+    .verdict-true    { background: #14532d; border: 1px solid #16a34a; }
+    .verdict-false   { background: #450a0a; border: 1px solid #dc2626; }
+    .verdict-mislead { background: #451a03; border: 1px solid #d97706; }
+    .verdict-unknown { background: #1e293b; border: 1px solid #475569; }
+
+    .loading {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid #334155;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+  <img src="icon.png" width="28" height="28" style="border-radius:6px;">
+</div>
+    <div>
+      <h1>FactGuard AI</h1>
+      <span>Misinformation Detector</span>
+    </div>
+  </div>
+
+  <div class="body">
+    <textarea id="text" placeholder="Paste text or select text on any webpage..."></textarea>
+
+<select id="category">
+  <option value="FAKE NEWS">Fake News</option>
+  <option value="KYC">KYC / Scam</option>
+  <option value="PHISHING">Phishing / URL</option>
+  <option value="OTHER">Other</option>
+</select>
+    <button id="checkBtn">Check Now</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

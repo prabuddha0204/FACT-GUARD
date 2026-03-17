@@ -12,11 +12,16 @@
   "description": "",
   "dependencies": {
     "@google/genai": "^1.44.0",
+    "@mendable/firecrawl-js": "^4.16.0",
     "@tavily/core": "^0.7.2",
+    "axios": "^1.13.6",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "groq-sdk": "^0.37.0"
+    "form-data": "^4.0.5",
+    "groq-sdk": "^0.37.0",
+    "multer": "^1.4.5-lts.1",
+    "twilio": "^5.13.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
