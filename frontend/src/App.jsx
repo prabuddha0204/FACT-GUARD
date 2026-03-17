@@ -59,9 +59,9 @@ const SUGGESTIONS = [
 ]
 
 const STATS = [
-  { value: "2.4M+", label: "Claims Checked" },
-  { value: "98.2%", label: "Accuracy Rate" },
-  { value: "150+", label: "Sources Indexed" },
+  { value: "500+", label: "Claims Checked" },
+  { value: "94.2%", label: "Accuracy Rate" },
+  { value: "12+", label: "Sources Indexed" },
   { value: "REAL-TIME", label: "Web Search" },
 ]
 
