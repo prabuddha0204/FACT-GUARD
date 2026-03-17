@@ -1,3 +1,5 @@
+const scannedUrls = new Set()
+
 const WHITELIST = [
   "factguardbeta.vercel.app",
   "factguardalpha.vercel.app",
@@ -21,6 +23,10 @@ async function scanUrl(tabId, url) {
     if (WHITELIST.some(w => hostname.includes(w))) return
   } catch (e) { return }
 
+  // Skip if already scanned this URL this session
+  if (scannedUrls.has(url)) return
+  scannedUrls.add(url)
+
   try {
     const res = await fetch("https://factguard-backend.onrender.com/scan-url", {
       method: "POST",
@@ -29,7 +35,6 @@ async function scanUrl(tabId, url) {
     })
     const data = await res.json()
 
-    // Only show banner for PHISHING or SUSPICIOUS — nothing for SAFE
     if (data.verdict !== "PHISHING" && data.verdict !== "SUSPICIOUS") return
 
     chrome.scripting.executeScript({
@@ -86,15 +91,9 @@ async function scanUrl(tabId, url) {
   } catch (err) {}
 }
 
+// Only scan on page load — NOT on tab switch
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete" && tab.url) {
     scanUrl(tabId, tab.url)
   }
-})
-
-chrome.tabs.onActivated.addListener(async (activeInfo) => {
-  try {
-    const tab = await chrome.tabs.get(activeInfo.tabId)
-    if (tab.url) scanUrl(tab.id, tab.url)
-  } catch (err) {}
 })

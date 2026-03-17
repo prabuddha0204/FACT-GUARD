@@ -3,7 +3,6 @@ import Beams from "./Beams"
 import InputBar from "./InputBar"
 import History, { useHistory } from "./History"
 import { useState, useEffect } from "react"
-import domtoimage from "dom-to-image-more"
 
 function parseConfidence(conf) {
   if (!conf) return 0
@@ -33,6 +32,21 @@ function ConfRing({ pct, verdict }) {
       </div>
     </div>
   )
+}
+
+// ── ROUND RECT HELPER ──
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.lineTo(x + w - r, y)
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+  ctx.lineTo(x + w, y + h - r)
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+  ctx.lineTo(x + r, y + h)
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+  ctx.lineTo(x, y + r)
+  ctx.quadraticCurveTo(x, y, x + r, y)
+  ctx.closePath()
 }
 
 const SUGGESTIONS = [
@@ -77,29 +91,100 @@ function App() {
     }
   }, [])
 
+  const confPct = result ? parseConfidence(result.confidence) : 0
+  const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  const verdictClass = result ? getVerdictClass(result.verdict) : ""
+
   // ── SHARE VERDICT ──
   const shareVerdict = async () => {
-    try {
-      const card = document.querySelector(".card-inner")
-      if (!card) return
-      const blob = await domtoimage.toBlob(card, {
-        bgcolor: "#0f172a",
-        scale: 2
-      })
+    const canvas = document.createElement("canvas")
+    const W = 640, H = 380
+    canvas.width = W * 2
+    canvas.height = H * 2
+    canvas.style.width = W + "px"
+    canvas.style.height = H + "px"
+    const ctx = canvas.getContext("2d")
+    ctx.scale(2, 2)
+
+    const colorMap = {
+      True: "#4ade80", False: "#f87171", Misleading: "#fbbf24",
+      Unverified: "#94a3b8", SAFE: "#4ade80", SUSPICIOUS: "#fbbf24", PHISHING: "#f87171",
+    }
+    const accentColor = colorMap[result.verdict] || "#94a3b8"
+
+    ctx.fillStyle = "#0a0a10"
+    ctx.fillRect(0, 0, W, H)
+
+    const grd = ctx.createRadialGradient(W*0.3, H*0.3, 0, W*0.3, H*0.3, W*0.6)
+    grd.addColorStop(0, accentColor + "18")
+    grd.addColorStop(1, "transparent")
+    ctx.fillStyle = grd
+    ctx.fillRect(0, 0, W, H)
+
+    ctx.fillStyle = "#111118"
+    roundRect(ctx, 24, 24, W-48, H-48, 20)
+    ctx.fill()
+    ctx.strokeStyle = "rgba(255,255,255,0.08)"
+    ctx.lineWidth = 1
+    roundRect(ctx, 24, 24, W-48, H-48, 20)
+    ctx.stroke()
+
+    ctx.strokeStyle = accentColor
+    ctx.lineWidth = 2.5
+    ctx.lineCap = "round"
+    ctx.beginPath()
+    ctx.moveTo(W*0.3, 24); ctx.lineTo(W*0.7, 24)
+    ctx.stroke()
+
+    ctx.fillStyle = "rgba(255,255,255,0.25)"
+    ctx.font = "600 10px 'Courier New', monospace"
+    ctx.fillText("FACTGUARD · FACT-CHECK RESULT", 48, 62)
+
+    ctx.fillStyle = accentColor
+    ctx.font = "900 72px Arial, sans-serif"
+    ctx.fillText(result.verdict, 48, 148)
+
+    ctx.fillStyle = "rgba(255,255,255,0.35)"
+    ctx.font = "500 13px Arial, sans-serif"
+    ctx.fillText(`Confidence: ${confPct}%`, 48, 175)
+
+    ctx.strokeStyle = "rgba(255,255,255,0.07)"
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.moveTo(48, 196); ctx.lineTo(W-48, 196)
+    ctx.stroke()
+
+    ctx.fillStyle = "rgba(255,255,255,0.55)"
+    ctx.font = "400 13px Arial, sans-serif"
+    const maxWidth = W - 96
+    const words = (result.explanation || "").split(" ")
+    let line = "", y = 222
+    for (const word of words) {
+      const test = line ? line + " " + word : word
+      if (ctx.measureText(test).width > maxWidth) {
+        ctx.fillText(line, 48, y)
+        line = word; y += 20
+        if (y > H - 80) { ctx.fillText(line + "…", 48, y); break }
+      } else { line = test }
+    }
+    if (y <= H - 80) ctx.fillText(line, 48, y)
+
+    ctx.fillStyle = "rgba(255,255,255,0.15)"
+    ctx.font = "500 11px 'Courier New', monospace"
+    ctx.fillText("factguard.ai", 48, H-34)
+    const now2 = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    ctx.textAlign = "right"
+    ctx.fillText(`Analyzed · ${now2}`, W-48, H-34)
+    ctx.textAlign = "left"
+
+    const image = canvas.toDataURL("image/png")
+    if (navigator.share) {
+      const blob = await (await fetch(image)).blob()
       const file = new File([blob], "factguard-verdict.png", { type: "image/png" })
-      if (navigator.share && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: "FactGuard Verdict" })
-      } else {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = "factguard-verdict.png"
-        a.click()
-        URL.revokeObjectURL(url)
-      }
-    } catch (err) {
-      console.error("Share error:", err)
-      alert("Could not share. Try again.")
+      await navigator.share({ files: [file], title: "FactGuard Verdict" })
+    } else {
+      const a = document.createElement("a")
+      a.href = image; a.download = "factguard-verdict.png"; a.click()
     }
   }
 
@@ -108,6 +193,7 @@ function App() {
     setResult(item.result)
   }
 
+  // ── HANDLE SEND ──
   const handleSend = async (message, category, imageFile) => {
     console.log("User message:", message)
     console.log("Category:", category)
@@ -199,10 +285,6 @@ function App() {
 
     setLoading(false)
   }
-
-  const confPct = result ? parseConfidence(result.confidence) : 0
-  const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  const verdictClass = result ? getVerdictClass(result.verdict) : ""
 
   return (
     <>
@@ -435,6 +517,16 @@ function App() {
                   </div>
                 </div>
               )}
+
+              {/* Share Button */}
+              <button className="share-btn" onClick={shareVerdict}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                </svg>
+                Share Verdict
+              </button>
 
               {/* Footer */}
               <div className="card-footer">
